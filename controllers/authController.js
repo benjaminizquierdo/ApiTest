@@ -3,11 +3,11 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const secretKey = 'Temporal2023.'; // Clave secreta para firmar el token
+const users = require('../controllers/selectUsers'); // Importar conexión a base de datos
+
+
 
 // Simulación de base de datos
-const usuarios = [
-  { id: 1, email: 'usuario@example.com', password: bcrypt.hashSync('password123', 10) }
-];
 
 // Generar JWT
 const generarToken = (usuario) => {
@@ -29,8 +29,52 @@ const generarToken = (usuario) => {
 const login = (req, res) => {
   const { email, password } = req.body;
 
+
+  const usuarios =  ()=> {
+    return new Promise((resolve, reject) => {
+      users.obtenerUsers().then((result) => {
+        resolve(result);
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  };
+
+const manejarDatos = async () => {
+  try {
+    const resultado = await usuarios(); // Espera hasta que la promesa se resuelva
+    console.log('Resultado:', resultado);  // Muestra "Datos obtenidos"
+  } catch (error) {
+    console.error('Error:', error); // Maneja cualquier error que ocurra
+  }
+};
+
+manejarDatos();
+
+/*
+const obtenerDatos = () => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve('Datos obtenidos');
+    }, 2000); // Simula un retraso de 2 segundos
+  });
+};
+
+const manejarDatos = () => {
+  obtenerDatos()
+    .then((resultado) => {
+      console.log('Resultado:', resultado); // Muestra "Datos obtenidos"
+    })
+    .catch((error) => {
+      console.error('Error:', error); // Maneja cualquier error que ocurra
+    });
+};
+
+manejarDatos(); // Ejecuta la función
+*/
   // Buscar usuario
-  const usuario = usuarios.find((u) => u.email === email);
+  console.log(usuarios);
+  //const usuario = usuarios.find((u) => u.email === email);
   if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' });
 
   // Verificar contraseña
